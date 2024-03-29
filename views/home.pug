@@ -1,0 +1,21 @@
+doctype html
+html(lang="en")
+    head
+        title Getting Started With Hubspot OAuth
+    body
+        h1 Getting Started With HubSpot OAuth
+        if token
+            p You're authenticated using the token: #{token}
+            p Your account has these cool contacts:
+            ul
+                each contact in contacts
+                    li #{contact.properties.firstname}  #{contact.properties.lastname}
+            p Your account has #{contacts.length} contacts
+
+            p Your portal ID is #{portalId}
+
+            p Access settings here: #[a(href=`https://app.hubspot.com/integrations-settings/${portalId}/installed/framework/3098925/general-settings`) here]
+                    
+        else
+            p You're not authenticated 
+            p Please install me #[a(href=`${authUrl}`) here]
