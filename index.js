@@ -15,7 +15,7 @@ const CLIENT_SECRET = `${process.env.CLIENT_SECRET}`;
 const REDIRECT_URI =`http://localhost:3000/oauth-callback`
 
 // const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=https://fgaletic.github.io/myfirstHSapp&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
-const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=http://localhost:3000/oauth-callback&scope=crm.objects.contacts.read%20crm.objects.contacts.write'
+const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=http://localhost:3000/oauth-callback&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
 
 
 const tokenStore = {};
@@ -33,6 +33,7 @@ const isAuthorized = (userId) => {
 // * 1. Send user to authorization page. This kicks off initial request to OAuth server.
 
 app.get('/', async (req, res) => {
+    console.log('Reached route handler'); // Add this line
     if (isAuthorized(req.sessionID)) {
         const accessToken = tokenStore[req.sessionID];
         const headers = {
@@ -80,17 +81,31 @@ app.get('/oauth-callback', async (req, res) => {
         code: req.query.code
     }
     try {
-        const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
-        // res.json(responseBody.data);
-        // * 4. Get access and refresh tokens.
-        tokenStore[req.sessionID] = responseBody.data.access_token;
-        res.redirect('/');
+        const tokenResponse = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
+        console.log('Token response:', tokenResponse.data); // Added logging
+    
+        const accessToken = tokenResponse.data.access_token;
+        tokenStore[req.sessionID] = accessToken;
+    
+        const accountResponse = await axios.get(`https://api.hubapi.com/oauth/v1/access-tokens/${accessToken}`);
+        console.log('Account response:', accountResponse.data); // Existing logging
+    
+        req.session.hubId = accountResponse.data.signed_access_token.hubId;
+        req.session.appId = accountResponse.data.signed_access_token.appId;
+    
+        const redirectUri = `https://app.hubspot.com/integrations-settings/${req.session.hubId}/installed/framework/${req.session.appId}/general-settings`;
+    
+        console.log('redirectUri:', redirectUri); // Existing logging
+        res.redirect(redirectUri);
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error); // Modified logging
     }
 });
 
 // * 4. Get access and refresh tokens.
 
-app.listen(3000, () => console.log('App running here: http://localhost:3000'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
 
