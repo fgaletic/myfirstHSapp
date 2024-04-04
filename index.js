@@ -33,7 +33,6 @@ const isAuthorized = (userId) => {
 // * 1. Send user to authorization page. This kicks off initial request to OAuth server.
 
 app.get('/', async (req, res) => {
-    console.log('Reached route handler'); // Add this line
     if (isAuthorized(req.sessionID)) {
         const accessToken = tokenStore[req.sessionID];
         const headers = {
@@ -82,20 +81,16 @@ app.get('/oauth-callback', async (req, res) => {
     }
     try {
         const tokenResponse = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
-        console.log('Token response:', tokenResponse.data); // Added logging
-    
+
         const accessToken = tokenResponse.data.access_token;
         tokenStore[req.sessionID] = accessToken;
     
         const accountResponse = await axios.get(`https://api.hubapi.com/oauth/v1/access-tokens/${accessToken}`);
-        console.log('Account response:', accountResponse.data); // Existing logging
     
         req.session.hubId = accountResponse.data.signed_access_token.hubId;
         req.session.appId = accountResponse.data.signed_access_token.appId;
     
         const redirectUri = `https://app.hubspot.com/integrations-settings/${req.session.hubId}/installed/framework/${req.session.appId}/general-settings`;
-    
-        console.log('redirectUri:', redirectUri); // Existing logging
         res.redirect(redirectUri);
     } catch (error) {
         console.error('Error:', error); // Modified logging
