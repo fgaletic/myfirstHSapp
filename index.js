@@ -11,11 +11,11 @@ app.set('view engine', 'pug');
 const CLIENT_ID = `${process.env.CLIENT_ID}`;
 const CLIENT_SECRET = `${process.env.CLIENT_SECRET}`;
 
-// const REDIRECT_URI =`https://fgaletic.github.io/myfirstHSapp`;
+// const REDIRECT_URI =`https://genetic-rebecca-nuclio-fsd-realista.koyeb.app/oauth-callback`;
 const REDIRECT_URI =`http://localhost:3000/oauth-callback`
 
-// const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=https://fgaletic.github.io/myfirstHSapp&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
-const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=http://localhost:3000/oauth-callback&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
+const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=https://genetic-rebecca-nuclio-fsd-realista.koyeb.app/oauth-callback&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
+// const authUrl = 'https://app-eu1.hubspot.com/oauth/authorize?client_id=48145012-6c87-4db6-b577-bb87b5f1547e&redirect_uri=http://localhost:3000/oauth-callback&scope=crm.objects.contacts.read%20crm.objects.contacts.write';
 
 
 const tokenStore = {};
